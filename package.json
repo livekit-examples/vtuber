@@ -1,0 +1,52 @@
+{
+  "name": "spatial-audio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@livekit/components-core": "^0.5.1",
+    "@livekit/components-react": "^0.6",
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/drawing_utils": "^0.3.1675466124",
+    "@mediapipe/face_mesh": "^0.4.1633559619",
+    "@mediapipe/holistic": "^0.5.1675471629",
+    "@next/font": "13.1.5",
+    "@pixiv/three-vrm": "^1.0.9",
+    "@pixiv/types-vrmc-vrm-1.0": "^1.0.0",
+    "@svgr/webpack": "^6.5.1",
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.27",
+    "@types/react-dom": "18.0.10",
+    "@types/three": "^0.150.1",
+    "@types/uuid": "^9.0.1",
+    "add": "^2.0.6",
+    "daisyui": "^2.49.0",
+    "eslint": "8.32.0",
+    "eslint-config-next": "13.1.5",
+    "kalidokit": "^1.1.5",
+    "livekit-client": "^1.6.3",
+    "livekit-server-sdk": "^1.1.0",
+    "next": "13.1.5",
+    "react": "18.2.0",
+    "react-device-detect": "^2.2.3",
+    "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.0",
+    "react-use": "^17.4.0",
+    "set-interval-async": "^3.0.3",
+    "three": "^0.150",
+    "typescript": "4.9.4",
+    "use-resize-observer": "^9.1.0",
+    "uuid": "^9.0.0",
+    "yarn": "^1.22.19"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.4"
+  }
+}
