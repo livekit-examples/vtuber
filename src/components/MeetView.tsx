@@ -1,33 +1,56 @@
+import { BroadcastDetails } from "@/pages/api/broadcast";
 import {
   useConnectionState,
+  useLiveKitRoom,
   useLocalParticipant,
+  useRoomInfo,
+  useTracks,
 } from "@livekit/components-react";
 import { ConnectionState } from "livekit-client";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { LocalVideoView } from "./LocalAvatarView/LocalVideoView";
 
 export function MeetView() {
   const connectionState = useConnectionState();
+  const { name } = useRoomInfo();
   const { localParticipant } = useLocalParticipant();
   const [twitchEnabled, setTwitchEnabled] = useState(false);
   const [twitchStreamKey, setTwitchStreamKey] = useState("");
+  const [canvasStream, setCavasStream] = useState<MediaStream | null>(null);
+  const [broadcastLoading, setBroadcastLoading] = useState(false);
 
   const broadcast = useCallback(async () => {
-    const response = await fetch("/api/broadcast", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        streamKey: twitchStreamKey,
-      }),
-    });
+    setBroadcastLoading(true);
+    const body: BroadcastDetails = {
+      room_name: name,
+      twitch_stream_key: twitchEnabled ? twitchStreamKey : undefined,
+    };
 
-    if (response.status === 200) {
-      return response.json();
+    try {
+      const track = canvasStream!.getTracks()[0];
+      await localParticipant.publishTrack(track);
+      await fetch("/api/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      throw e;
+    } finally {
+      setBroadcastLoading(false);
     }
+  }, [canvasStream, localParticipant, name, twitchEnabled, twitchStreamKey]);
 
-    const { error } = await response.json();
-    throw error;
-  }, [twitchStreamKey]);
+  const isLive = useMemo(() => {
+    return localParticipant.publishedTracksInfo.length > 0;
+  }, [localParticipant.publishedTracksInfo.length]);
+
+  const broadcastButtonText = useMemo(() => {
+    if (broadcastLoading) {
+      return "";
+    }
+    return isLive ? "Stop Stream" : "Go Live";
+  }, [broadcastLoading, isLive]);
 
   if (connectionState !== ConnectionState.Connected) {
     return null;
@@ -38,7 +61,7 @@ export function MeetView() {
       <div className="w-4/5">
         <LocalVideoView
           onCanvasStreamChanged={(ms) => {
-            console.log("NEIL ms", ms);
+            setCavasStream(ms);
           }}
         />
       </div>
@@ -66,7 +89,14 @@ export function MeetView() {
           </div>
         </div>
         <div className="grow" />
-        <button className="btn m-2">Start Broadcast</button>
+        <button
+          className={`btn m-2 ${broadcastLoading ? "loading" : ""}`}
+          onClick={async () => {
+            await broadcast();
+          }}
+        >
+          {broadcastButtonText}
+        </button>
       </div>
     </div>
   );

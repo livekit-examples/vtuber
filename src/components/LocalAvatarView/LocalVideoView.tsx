@@ -118,6 +118,7 @@ export const LocalVideoView = ({ onCanvasStreamChanged }: Props) => {
 
   useEffect(() => {
     if (!canvasRef.current) return;
+    if (canvasStreamRef.current) return;
     canvasStreamRef.current = canvasRef.current.captureStream(60);
     onCanvasStreamChanged(canvasStreamRef.current);
   }, [onCanvasStreamChanged]);

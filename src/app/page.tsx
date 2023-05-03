@@ -41,7 +41,6 @@ export default function Page() {
         token={connectionDetails.token}
         serverUrl={connectionDetails.ws_url}
         connect={true}
-        connectOptions={{ autoSubscribe: false }}
       >
         <div className="flex h-screen w-screen">
           <div
