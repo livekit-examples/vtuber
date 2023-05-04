@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
-  AccessToken,
   EgressClient,
   RoomServiceClient,
   StreamOutput,
@@ -14,6 +13,7 @@ import {
 export type BroadcastDetails = {
   room_name: string;
   twitch_stream_key?: string;
+  youtube_stream_key?: string;
 };
 
 type ErrorResponse = {
@@ -53,50 +53,21 @@ export default async function handler(
     );
   }
 
+  if (broadcastDetails.youtube_stream_key) {
+    rtmpUrls.push(
+      `rtmp://a.rtmp.youtube.com/live2/${broadcastDetails.youtube_stream_key}`
+    );
+  }
+
   const streamOutput: StreamOutput = {
     protocol: StreamProtocol.RTMP,
     urls: rtmpUrls,
   };
 
-  // Wait for tracks to be published
-  let videoTrack: TrackInfo | null = null;
-  let audioTrack: TrackInfo | null = null;
-
-  const lookForTracksStartTime = Date.now();
-  while (!videoTrack && !audioTrack) {
-    console.log("NEIL waiting for tracks");
-    const streamer = await roomClient.getParticipant(
-      broadcastDetails.room_name,
-      "streamer"
-    );
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    videoTrack =
-      streamer.tracks.filter((track) => track.type === TrackType.VIDEO)[0] ||
-      null;
-
-    audioTrack =
-      streamer.tracks.filter((track) => track.type === TrackType.AUDIO)[0] ||
-      null;
-
-    if (Date.now() - lookForTracksStartTime > 10_000) {
-      return res.status(500).json({ error: "Timed out waiting for tracks" });
-    }
-  }
-
-  const opts: TrackCompositeOptions = {};
-
-  if (videoTrack) {
-    opts.videoTrackId = videoTrack.sid;
-  }
-
-  if (audioTrack) {
-    opts.audioTrackId = audioTrack.sid;
-  }
-
-  await egressClient.startTrackCompositeEgress(
+  await egressClient.startRoomCompositeEgress(
     broadcastDetails.room_name,
     streamOutput,
-    opts
+    { audioOnly: false, videoOnly: false, layout: "grid" }
   );
 
   res.status(200).send();

@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@livekit/components-core": "^0.5.1",
-    "@livekit/components-react": "^0.6",
+    "@livekit/components-core": "^0.6.5",
+    "@livekit/components-react": "^1.0",
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/drawing_utils": "^0.3.1675466124",
     "@mediapipe/face_mesh": "^0.4.1633559619",

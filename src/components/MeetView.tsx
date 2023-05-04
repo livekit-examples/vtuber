@@ -3,21 +3,31 @@ import {
   useConnectionState,
   useLiveKitRoom,
   useLocalParticipant,
+  useMediaTrack,
   useRoomInfo,
   useTracks,
 } from "@livekit/components-react";
-import { ConnectionState } from "livekit-client";
+import { ConnectionState, Track } from "livekit-client";
 import { useCallback, useMemo, useState } from "react";
+import { EgressDestination } from "./EgressDestination";
 import { LocalVideoView } from "./LocalAvatarView/LocalVideoView";
 
 export function MeetView() {
   const connectionState = useConnectionState();
   const { name } = useRoomInfo();
   const { localParticipant } = useLocalParticipant();
-  const [twitchEnabled, setTwitchEnabled] = useState(false);
-  const [twitchStreamKey, setTwitchStreamKey] = useState("");
   const [canvasStream, setCavasStream] = useState<MediaStream | null>(null);
   const [broadcastLoading, setBroadcastLoading] = useState(false);
+  const { track: micTrack } = useMediaTrack(
+    Track.Source.Microphone,
+    localParticipant
+  );
+
+  // StreamKeys
+  const [twitchEnabled, setTwitchEnabled] = useState(false);
+  const [twitchStreamKey, setTwitchStreamKey] = useState("");
+  const [youtubeEnabled, setYouTubeEnabled] = useState(false);
+  const [youtubeStreamKey, setYouTubeStreamKey] = useState("");
 
   const broadcast = useCallback(async () => {
     setBroadcastLoading(true);
@@ -29,17 +39,34 @@ export function MeetView() {
     try {
       const track = canvasStream!.getTracks()[0];
       await localParticipant.publishTrack(track);
+      const mic = micTrack?.mediaStream?.getTracks()[0];
+      if (mic) {
+        await localParticipant.publishTrack(mic);
+      }
       await fetch("/api/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
     } catch (e) {
+      const publishedTracks = localParticipant.getTracks();
+      const tracks = publishedTracks
+        .map((t) => t.track)
+        .filter((t) => t)
+        .map((t) => t?.mediaStreamTrack!);
+      await localParticipant.unpublishTracks(tracks);
       throw e;
     } finally {
       setBroadcastLoading(false);
     }
-  }, [canvasStream, localParticipant, name, twitchEnabled, twitchStreamKey]);
+  }, [
+    canvasStream,
+    localParticipant,
+    micTrack,
+    name,
+    twitchEnabled,
+    twitchStreamKey,
+  ]);
 
   const isLive = useMemo(() => {
     return localParticipant.publishedTracksInfo.length > 0;
@@ -66,28 +93,20 @@ export function MeetView() {
         />
       </div>
       <div className="flex flex-col grow h-full">
-        <div className="flex flex-col border rounded-sm m-1">
-          <div className="font-italics ml-1">Twitch</div>
-          <div className="flex items-center m-2">
-            <input
-              type="checkbox"
-              checked={twitchEnabled}
-              className="toggle toggle-sm mr-2"
-              onChange={(e) => {
-                setTwitchEnabled(e.target.checked);
-              }}
-            />
-            <input
-              onChange={(e) => {
-                setTwitchStreamKey(e.target.value);
-              }}
-              value={twitchStreamKey}
-              type="text"
-              className="input input-sm"
-              placeholder="Stream Key"
-            />
-          </div>
-        </div>
+        <EgressDestination
+          type="Twitch"
+          setEnabled={setTwitchEnabled}
+          setStreamKey={setTwitchStreamKey}
+          enabled={twitchEnabled}
+          streamKey={twitchStreamKey}
+        />
+        <EgressDestination
+          type="YouTube"
+          setEnabled={setYouTubeEnabled}
+          setStreamKey={setYouTubeStreamKey}
+          enabled={youtubeEnabled}
+          streamKey={youtubeStreamKey}
+        />
         <div className="grow" />
         <button
           className={`btn m-2 ${broadcastLoading ? "loading" : ""}`}
