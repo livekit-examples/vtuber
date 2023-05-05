@@ -8,7 +8,7 @@ export const GithubLink = () => {
         target="_blank"
         className="flex sm:flex-row flex-col items-center justify-center h-full"
         rel="noreferrer"
-        href="https://github.com/livekit-examples/spatial-audio"
+        href="https://github.com/livekit-examples/vtuber"
       >
         <div className="text-xs text-secondary sm:mr-2 mr-0">View Source</div>
         <div className="h-[30px] w-[30px] relative">
