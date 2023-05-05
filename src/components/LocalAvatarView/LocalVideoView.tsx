@@ -32,7 +32,6 @@ export const LocalVideoView = ({ onCanvasStreamChanged }: Props) => {
     })
   );
   const size = useResizeObserver({ ref: resizeRef });
-  const { activeDeviceId } = useMediaDeviceSelect({ kind: "videoinput" });
 
   const inferenceLoop = useRef(async () => {
     try {
@@ -90,6 +89,15 @@ export const LocalVideoView = ({ onCanvasStreamChanged }: Props) => {
       const target: Vector3 = new THREE.Vector3(0, 0, 0);
       vrm.humanoid.humanBones.head.node.getWorldPosition(target);
       cameraRef.current!.position.y = target.y;
+      var bgTexture = new THREE.TextureLoader().load("bg.jpeg");
+      var material = new THREE.SpriteMaterial({
+        map: bgTexture,
+        color: 0xffffff,
+      });
+      var sprite = new THREE.Sprite(material);
+      sprite.scale.set(10, 7, 7);
+      sprite.position.set(0, 1, -5);
+      sceneRef.current?.add(sprite);
     });
   }, [size.height, size.width]);
 
