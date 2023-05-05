@@ -67,7 +67,7 @@ export default async function handler(
   await egressClient.startRoomCompositeEgress(
     broadcastDetails.room_name,
     streamOutput,
-    { audioOnly: false, videoOnly: false, layout: "grid" }
+    {}
   );
 
   res.status(200).send();

@@ -38,7 +38,9 @@ export function MeetView() {
 
     try {
       const track = canvasStream!.getTracks()[0];
-      await localParticipant.publishTrack(track);
+      await localParticipant.publishTrack(track, {
+        source: Track.Source.Camera,
+      });
       const mic = micTrack?.mediaStream?.getTracks()[0];
       if (mic) {
         await localParticipant.publishTrack(mic);
