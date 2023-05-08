@@ -91,6 +91,13 @@ export function MeetView() {
     twitchStreamKey,
   ]);
 
+  const viewerLink = useMemo(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return `${window.location.origin}/view/${name}`;
+  }, [name]);
+
   const broadcastButtonText = useMemo(() => {
     if (broadcastLoading) {
       return "";
@@ -159,6 +166,9 @@ export function MeetView() {
           enabled={youtubeEnabled}
           streamKey={youtubeStreamKey}
         />
+        <a className="link" target="_blank" rel="noreferrer" href={viewerLink}>
+          Preview Link
+        </a>
         <div className="grow" />
         <button
           className={`btn m-2 ${broadcastLoading ? "loading" : ""}`}
