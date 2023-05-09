@@ -166,7 +166,12 @@ export function MeetView() {
           enabled={youtubeEnabled}
           streamKey={youtubeStreamKey}
         />
-        <a className="link" target="_blank" rel="noreferrer" href={viewerLink}>
+        <a
+          className="link p-2"
+          target="_blank"
+          rel="noreferrer"
+          href={viewerLink}
+        >
           Preview Link
         </a>
         <div className="grow" />
