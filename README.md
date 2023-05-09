@@ -1,6 +1,6 @@
 # VTuber LiveStreaming with LiveKit
 
-[![Sample Gif](https://user-images.githubusercontent.com/8453967/221318613-861215da-1d71-492e-979f-dc7f18cb5c7f.gif)](https://vtuber-demo.livekit.io/)
+[![Sample Gif](https://github.com/livekit-examples/vtuber/assets/8453967/198e10ea-a3c3-475d-b7de-65381faddfef)](https://vtuber-demo.livekit.io)
 
 This is a demo of a vtuber live streaming app using LiveKit. The app uses your webcam to track your face and posture, applies face and posture data to a 3D avatar, and streams the WebGL canvas to Twitch and/or YouTube.
 
