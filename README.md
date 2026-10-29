@@ -1,3 +1,6 @@
+> [!WARNING]
+> This example is archived and no longer maintained. For current examples, see [agent-starter-react](https://github.com/livekit-examples/agent-starter-react).
+
 # VTuber LiveStreaming with LiveKit
 
 ![Sample Gif](https://github.com/livekit-examples/vtuber/assets/8453967/0a38eb99-61bd-429e-924d-e6890485ba8f)
